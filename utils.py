@@ -1,4 +1,6 @@
 from pathlib import Path
+import json
+import numpy as np
 
 def load_data(path_to_data, get_dev_data = False):
     train_vix_json = Path(path_to_data) / 'train/VIX_1w.json'
@@ -71,3 +73,12 @@ def build_dataset(data_vix, data_eur, labels=True):
             y[i, 1] = data_vix[i]['target_classif']
             y[i, 2] = data_eur[i]['target_reg']
             y[i, 3] = data_eur[i]['target_classif']
+    
+    return (X_stock, X_speech), y
+
+def detect_language(list_of_speechs):
+    lang = []
+    for speech in speech_list:
+        lang.append(detect(speech))
+    lang[0] = 'en'
+    return lang
