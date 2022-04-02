@@ -2,6 +2,7 @@ import json
 import argparse
 import os
 from utils import process_json, keep_english_speeches
+from summarization import summarize
 
 if __name__ == '__main__':
 
@@ -12,6 +13,8 @@ if __name__ == '__main__':
                         help="Split: dev or test.")
     parser.add_argument("-s", "--savepath", type=str, default='res/answer/',
                         help="Path to save the results.")
+    parser.add_argument("-ntop", "--n_top_sent", type=int, default=8,
+                        help="Number of sentences to keep for summarization.")
     parser.add_argument(
         "-i",
         "--index",
@@ -53,8 +56,25 @@ if __name__ == '__main__':
             split_ecb_speech,
             split_fed_speech,
             labels=False)
-            
-        pred_reg, pred_classif = create_baseline(data)
+
+        train_ecb_summarized = [
+            summarize(
+                speech,
+                args.n_top_sent) for speech in train_ecb_speech]
+        train_fed_summarized = [
+            summarize(
+                speech,
+                args.n_top_sent for speech in train_fed_speech]
+
+        split_ecb_summarized=[
+            summarize(
+                speech,
+                args.n_top_sent) for speech in split_ecb_speech]
+        split_fed_summarized=[
+            summarize(
+                speech,
+                args.n_top_sent) for speech in split_fed_speech]
+        pred_reg, pred_classif=create_baseline(data)
 
         with open(os.path.join(save_path, 'pred_reg.txt'), 'w') as f:
             f.write('\n'.join(list(map(str, pred_reg))))
