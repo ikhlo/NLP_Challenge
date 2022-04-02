@@ -56,6 +56,9 @@ def get_languages(speech_list):
     A (N, ) numpy.ndarray with object dtype containing at index i the language
     of the i-th speech of the speeches' list. 
   """
+  from langdetect import detect, DetectorFactory
+  DetectorFactory.seed = 0
+  
   lang = []
   for speech in speech_list:
     if speech = '':
