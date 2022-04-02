@@ -9,16 +9,20 @@ def convert_sentiment(sentiment_outputs):
             labels.append(-1)
     return labels
 
+
 def get_speech_sentiment(ecb_speeches, fed_speeches, use_gpu=False):
     if use_gpu:
-        device=0
+        device = 0
     else:
-        device=-1
+        device = -1
     model = "mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis"
-    clf = pipeline("sentiment-analysis", model=model, truncation=True, device=device)
+    clf = pipeline(
+        "sentiment-analysis",
+        model=model,
+        truncation=True,
+        device=device)
 
     ecb_speeches_sentiment = convert_sentiment(clf(ecb_speeches))
     fed_speeches_sentiment = convert_sentiment(clf(fed_speeches))
-    
-    return ecb_speeches_sentiment, fed_speeches_sentiment
 
+    return ecb_speeches_sentiment, fed_speeches_sentiment
