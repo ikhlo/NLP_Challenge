@@ -2,6 +2,48 @@ from pathlib import Path
 import json
 import numpy as np
 
+def process_json(json_data):
+  """
+  Function to do some basic procession on text as removing starting and
+  ending whitespace, retrieve text from their list where they are stored
+  and replace null text by ''.
+
+  Args:
+    (Dict) json_data: The JSON dict to be processed
+  """
+  for individual in json_data:
+    for day_of_speech in individual['speech']:
+      for bank in day_of_speech.keys():
+        day_of_speech[bank] = '' if len(day_of_speech[bank])==0 else day_of_speech[bank][0].strip('\" ')
+
+
+def get_list_speeches(json_data, bank='FED'):
+  """
+  Get the list of unique speechs present in the JSON data
+  
+  Args:
+    (Dict) json_data: The JSON dict data.
+    (String) bank: The name of the bank's speeches we are working on.
+
+  Return:
+    A List containing unique speechs for the chosen bank. 
+  """
+  N = len(data)
+  T = 20
+    
+  speech_set = set()
+  speech_list = []
+
+  for sample in range(N):
+    for day in range(T):
+      speech = data[sample]['speech'][day][bank]
+      if speech not in speech_set:
+        speech_set.add(speech)
+        speech_list.append(speech)
+  
+  return speech_list
+
+
 def load_data(path_to_data, get_dev_data = False):
     train_vix_json = Path(path_to_data) / 'train/VIX_1w.json'
     train_eur_json = Path(path_to_data) / 'train/EURUSDV1M_1w.json'
