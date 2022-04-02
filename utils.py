@@ -1,4 +1,3 @@
-from pathlib import Path
 import json
 import numpy as np
 
@@ -123,4 +122,3 @@ def build_dataset(json_data, ecb_list, fed_list, labels=True):
 
     if labels : return X, y_clf, y_reg
     else : return X
-
