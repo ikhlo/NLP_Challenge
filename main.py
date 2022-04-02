@@ -64,7 +64,7 @@ if __name__ == '__main__':
         train_fed_summarized = [
             summarize(
                 speech,
-                args.n_top_sent for speech in train_fed_speech]
+                args.n_top_sent) for speech in train_fed_speech]
 
         split_ecb_summarized=[
             summarize(
