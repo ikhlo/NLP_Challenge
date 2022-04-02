@@ -46,6 +46,14 @@ if __name__ == '__main__':
         train_ecb_speech, train_fed_speech = keep_english_speeches(train_data)
         split_ecb_speech, split_fed_speech = keep_english_speeches(split_data)
 
+        X_train, y_clf, y_reg = build_dataset(
+            train_data, train_ecb_speech, train_ecb_speech)
+        X_test = build_dataset(
+            split_data,
+            split_ecb_speech,
+            split_fed_speech,
+            labels=False)
+            
         pred_reg, pred_classif = create_baseline(data)
 
         with open(os.path.join(save_path, 'pred_reg.txt'), 'w') as f:
