@@ -1,3 +1,5 @@
 env/
 poetry.lock
 pyproject.toml
+data/
+__pycache__

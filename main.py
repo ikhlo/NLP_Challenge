@@ -22,7 +22,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "-gpu",
         "--gpu",
-        default=True,
+        default=False,
         action=argparse.BooleanOptionalAction,
         help="Use GPU or not for sentiment classification.")
     parser.add_argument(
@@ -43,21 +43,25 @@ if __name__ == '__main__':
         indexes = [args.index]
 
     for index in indexes:
+        print(f"WORKING WITH {index}")
         split_path = f'{args.datapath}/{split}/{index}.json'
         train_path = f'{args.datapath}/train/{index}.json'
         save_path = os.path.join(args.savepath, index)
-        if not os.path.exists(save_path):
-            os.mkdir(save_path)
+        os.makedirs(save_path, exist_ok=True)
 
+        print("Loading JSON files...", end="")
         with open(train_path, 'r') as fp:
             train_data = json.load(fp)
             process_json(train_data)
         with open(split_path, 'r') as fp:
             split_data = json.load(fp)
             process_json(split_data)
-
+        print("Done")
+        
+        print("Only retrieve english speeches...", end="")
         train_ecb_speech, train_fed_speech = keep_english_speeches(train_data)
         split_ecb_speech, split_fed_speech = keep_english_speeches(split_data)
+        print("Done")
 
         X_train, y_clf, y_reg = build_dataset(
             train_data, train_ecb_speech, train_ecb_speech)
@@ -67,6 +71,7 @@ if __name__ == '__main__':
             split_fed_speech,
             labels=False)
 
+        print("Summarize all speeches...", end="")
         train_ecb_summarized = [
             summarize(
                 speech,
@@ -84,12 +89,16 @@ if __name__ == '__main__':
             summarize(
                 speech,
                 args.n_top_sent) for speech in split_fed_speech]
+        print("Done")
 
+        print("Get speeches sentiment...", end="")
         train_ecb_sentiment, train_fed_sentiment = get_speech_sentiment(
             train_ecb_summarized, train_fed_summarized, use_gpu=args.gpu)
         split_ecb_sentiment, split_fed_sentiment = get_speech_sentiment(
             split_ecb_summarized, split_fed_summarized, use_gpu=args.gpu)
+        print("Done")
 
+        print("Start modelling and prediction...", end="")
         X_train = concatenate_features(
             X_train, train_ecb_sentiment, train_fed_sentiment)
         X_split = concatenate_features(
@@ -110,6 +119,7 @@ if __name__ == '__main__':
         regr = Ridge()
         regr.fit(X_train, y_reg)
         pred_reg = regr.predict(X_split).flatten().tolist()
+        print("Done")
 
         # Write outputs
         with open(os.path.join(save_path, 'pred_reg.txt'), 'w') as f:
