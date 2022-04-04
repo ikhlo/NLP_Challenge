@@ -180,3 +180,6 @@ def concatenate_features(X, ecb_speeches_sentiment, fed_speeches_sentiment):
     X_stock[X_stock >= X_ema] = 1
 
     return np.concatenate([X_stock, X_ema, X_ecb, X_fed], axis=1)
+
+def from_data_to_X(data):
+    return(np.array([data[i]['stock'] for i in range(len(data))]))

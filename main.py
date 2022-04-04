@@ -3,9 +3,11 @@ import argparse
 import os
 
 from sklearn.linear_model import LogisticRegression, Ridge
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 
 from sentiment_model import get_speech_sentiment
-from utils import build_dataset, concatenate_features, process_json, keep_english_speeches
+from utils import build_dataset, concatenate_features, from_data_to_X, process_json, keep_english_speeches
 from summarization import summarize
 
 if __name__ == '__main__':
@@ -116,10 +118,17 @@ if __name__ == '__main__':
         pred_classif = clf.predict(X_split).flatten().tolist()
 
         # Regressor
-        regr = Ridge()
-        regr.fit(X_train, y_reg)
-        pred_reg = regr.predict(X_split).flatten().tolist()
-        print("Done")
+        n_poly = 1
+        poly = PolynomialFeatures(degree = n_poly, include_bias=True)
+        regr = make_pipeline(StandardScaler(with_mean=True), Ridge(alpha = 1))
+
+        X_train_reg = from_data_to_X(train_data)
+        poly_features_train = poly.fit_transform(X_train_reg)
+        regr.fit(poly_features_train, y_reg)
+
+        X_split_reg = from_data_to_X(split_data)
+        poly_features_test = poly.fit_transform(X_split_reg)
+        pred_reg = regr.predict(poly_features_test)
 
         # Write outputs
         with open(os.path.join(save_path, 'pred_reg.txt'), 'w') as f:
@@ -127,3 +136,5 @@ if __name__ == '__main__':
 
         with open(os.path.join(save_path, 'pred_classif.txt'), 'w') as f:
             f.write('\n'.join(list(map(str, pred_classif))))
+        
+        print("Done")
