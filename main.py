@@ -57,8 +57,8 @@ if __name__ == '__main__':
             split_data = json.load(fp)
             process_json(split_data)
         print("Done")
-        
-        print("Only retrieve english speeches...", end="")
+
+        print("Retrieving english speeches...", end="")
         train_ecb_speech, train_fed_speech = keep_english_speeches(train_data)
         split_ecb_speech, split_fed_speech = keep_english_speeches(split_data)
         print("Done")
