@@ -19,8 +19,12 @@ if __name__ == '__main__':
                         help="Path to save the results.")
     parser.add_argument("-ntop", "--n_top_sent", type=int, default=8,
                         help="Number of sentences to keep for summarization.")
-    parser.add_argument("-gpu", "--gpu", default=True, action=argparse.BooleanOptionalAction,
-                        help="Use GPU or not for sentiment classification.")
+    parser.add_argument(
+        "-gpu",
+        "--gpu",
+        default=True,
+        action=argparse.BooleanOptionalAction,
+        help="Use GPU or not for sentiment classification.")
     parser.add_argument(
         "-i",
         "--index",
@@ -72,24 +76,33 @@ if __name__ == '__main__':
                 speech,
                 args.n_top_sent) for speech in train_fed_speech]
 
-        split_ecb_summarized=[
+        split_ecb_summarized = [
             summarize(
                 speech,
                 args.n_top_sent) for speech in split_ecb_speech]
-        split_fed_summarized=[
+        split_fed_summarized = [
             summarize(
                 speech,
                 args.n_top_sent) for speech in split_fed_speech]
 
-        train_ecb_sentiment, train_fed_sentiment = get_speech_sentiment(train_ecb_summarized, train_fed_summarized, use_gpu=args.gpu)
-        split_ecb_sentiment, split_fed_sentiment = get_speech_sentiment(split_ecb_summarized, split_fed_summarized, use_gpu=args.gpu)
+        train_ecb_sentiment, train_fed_sentiment = get_speech_sentiment(
+            train_ecb_summarized, train_fed_summarized, use_gpu=args.gpu)
+        split_ecb_sentiment, split_fed_sentiment = get_speech_sentiment(
+            split_ecb_summarized, split_fed_summarized, use_gpu=args.gpu)
 
-        X_train = concatenate_features(X_train, train_ecb_sentiment, train_fed_sentiment)
-        X_split = concatenate_features(X_split, split_ecb_sentiment, split_fed_sentiment)
+        X_train = concatenate_features(
+            X_train, train_ecb_sentiment, train_fed_sentiment)
+        X_split = concatenate_features(
+            X_split, split_ecb_sentiment, split_fed_sentiment)
 
         # Classifier
-        clf = LogisticRegression(penalty='l2', class_weight=None, solver='lbfgs', C=0.5,
-                          max_iter=10000, random_state=44)
+        clf = LogisticRegression(
+            penalty='l2',
+            class_weight=None,
+            solver='lbfgs',
+            C=0.5,
+            max_iter=10000,
+            random_state=44)
         clf.fit(X_train, y_clf)
         pred_classif = clf.predict(X_split).flatten().tolist()
 

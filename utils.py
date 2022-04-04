@@ -153,8 +153,8 @@ def build_dataset(json_data, ecb_list, fed_list, labels=True):
         X[i, 2, :] = np.array(idx_fed)
 
         if labels:
-            y_clf[i, 0] = data[i]['target_classif']
-            y_reg[i, 0] = data[i]['target_reg']
+            y_clf[i, 0] = json_data[i]['target_classif']
+            y_reg[i, 0] = json_data[i]['target_reg']
 
         if labels:
             return X, y_clf, y_reg
@@ -163,18 +163,20 @@ def build_dataset(json_data, ecb_list, fed_list, labels=True):
 
 
 def EMA(prices, alpha):
-  ema = prices[0]
-  for x in prices[:1]:
-    ema = alpha*x + (1-alpha)* ema
-  return ema
+    ema = prices[0]
+    for x in prices[:1]:
+        ema = alpha * x + (1 - alpha) * ema
+    return ema
+
 
 def concatenate_features(X, ecb_speeches_sentiment, fed_speeches_sentiment):
-  X_ema = np.apply_along_axis(EMA, 1, X[:, 0, :], alpha=2/(20 + 1)).reshape(-1, 1)
-  X_ecb = np.take(ecb_speeches_sentiment , X[:, 1,:].astype('int32'))
-  X_fed = np.take(fed_speeches_sentiment , X[:, 2,:].astype('int32'))
+    X_ema = np.apply_along_axis(
+        EMA, 1, X[:, 0, :], alpha=2 / (20 + 1)).reshape(-1, 1)
+    X_ecb = np.take(ecb_speeches_sentiment, X[:, 1, :].astype('int32'))
+    X_fed = np.take(fed_speeches_sentiment, X[:, 2, :].astype('int32'))
 
-  X_stock = X[:, 0, :].copy()
-  X_stock[X_stock < X_ema] = -1
-  X_stock[X_stock >= X_ema] = 1
+    X_stock = X[:, 0, :].copy()
+    X_stock[X_stock < X_ema] = -1
+    X_stock[X_stock >= X_ema] = 1
 
-  return np.concatenate([X_stock, X_ema, X_ecb, X_fed], axis=1)
+    return np.concatenate([X_stock, X_ema, X_ecb, X_fed], axis=1)

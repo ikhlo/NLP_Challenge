@@ -1,3 +1,6 @@
+from transformers import pipeline
+
+
 def convert_sentiment(sentiment_outputs):
     labels = []
     for dico in sentiment_outputs:
